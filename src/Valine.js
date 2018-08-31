@@ -299,8 +299,12 @@ class Valine {
              if(typeof option.avatar_url != "undefined" && option.avatar_url != null){
                  avatar_url = option.avatar_url;
              }
+             let avatar_count = 20;
+             if(!isNaN(option.avatar_count)){
+                avatar_count = option.avatar_count;
+             }
              let hash =Math.abs(hashcode(ret.get("nick") + ret.get("emailHash")));
-             let gravatar_url = avatar_url + (hash % 20 + 1) + ".jpg";
+             let gravatar_url = avatar_url + (hash % avatar_count + 1) + ".jpg";
             // language=HTML
             _vcard.innerHTML = `<img class="vavatar" src="${gravatar_url}"/>
                                         <section class="text-wrapper">
@@ -695,12 +699,14 @@ const hashcode =function(str){
     if(typeof str == "undefined" || str == null){
         return 0;
     }
-    var h = 0, off = 0;  
-    var len = str.length;  
-    for(var i = 0; i < len; i++){  
-        h = 31 * h + str.charCodeAt(off++);  
-    }  
-    return h;  
+    var hash = 0;
+    if (str.length == 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+        let char = str.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
 }  
 
 module.exports = Valine;
